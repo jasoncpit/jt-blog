@@ -13,7 +13,7 @@ export async function GET(context: Context) {
   const projects = (await getCollection("projects"))
     .filter(project => !project.data.draft);
 
-  const ideas = (await getCollection("ideas"))
+  const ideas = (await getCollection("idea"))
     .filter(idea => !idea.data.draft);
 
   const items = [...blog, ...projects, ...ideas]
