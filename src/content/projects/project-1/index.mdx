@@ -4,8 +4,9 @@ description: "Part of 2024 30 days Map Challenge"
 date: "Mar 18 2024"
 demoURL: "https://jasoncpit.github.io/LLM-Mobility-London/"
 repoURL: "https://github.com/jasoncpit/LLM-Mobility-London"
-
 ---
+
+import Mermaid from '@components/Mermaid.astro';
 
 ![map](/llm-mobility.jpeg)
 
@@ -30,7 +31,7 @@ The final plans were exported into a format that could be animated on a map. Usi
 At a high level, the sequence would be  planner → daily planner → grounding → validation → export → visualization. 
 
 
-```mermaid
+<Mermaid code={`
 sequenceDiagram
     participant U as Persona
     participant P as Planner
@@ -52,7 +53,7 @@ sequenceDiagram
         D->>V: re-validate
     end
     V->>X: export valid day
-``` 
+`} />
 
 ## What Emerged
 
