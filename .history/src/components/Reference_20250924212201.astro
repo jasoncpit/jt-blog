@@ -1,0 +1,44 @@
+---
+import Link from "@components/Link.astro";
+
+type ReferenceItem = { title: string; url?: string; note?: string; year?: string };
+
+interface Props {
+  references?: ReferenceItem[];
+}
+
+const { references = [] } = Astro.props as Props;
+---
+
+{references.length && (
+  <div class="flex flex-col gap-6 mt-10">
+    <section class="flex flex-col gap-3">
+      <h3 class="text-lg font-semibold">References</h3>
+      <ol class="flex flex-col gap-2">
+        {references.map((r, i) => (
+          <li class="text-sm text-gray-700 dark:text-gray-300">
+            <span class="font-medium text-gray-500"> </span>
+            {r.url ? (
+              <span>
+                {r.title}{r.year && ` (${r.year})`}. Available at: <Link href={r.url} target="_blank">{r.url}</Link>.    
+                {r.note && <span class="text-gray-500 dark:text-gray-400"> [{r.note}]</span>}
+              </span>
+            ) : (
+              <span>
+                {r.title}{r.year && ` (${r.year})`}.
+                {r.note && <span class="text-gray-500 dark:text-gray-400"> [{r.note}]</span>}
+              </span>
+            )}
+
+            // if there is no reference, then don't display anything
+            {references.length === 0 && (
+              <span>
+                No reference found.
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </section>
+  </div>
+)}

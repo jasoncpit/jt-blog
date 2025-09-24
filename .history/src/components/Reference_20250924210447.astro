@@ -1,0 +1,45 @@
+---
+import Link from "@components/Link.astro";
+
+type ReferenceItem = { title: string; url?: string; note?: string };
+type NoteItem = { title: string; body: string };
+
+interface Props {
+  references?: ReferenceItem[];
+  notes?: NoteItem[];
+}
+
+const { references = [], notes = [] } = Astro.props as Props;
+---
+
+{(references.length || notes.length) && (
+  <div class="flex flex-col gap-6 mt-10">
+    {references.length ? (
+      <section class="flex flex-col gap-3">
+        <h3 class="text-lg font-semibold">References</h3>
+        <ul class="flex flex-col gap-2">
+          {references.map((r) => (
+            <li class="text-sm">
+              {r.url ? <a href={r.url} target="_blank" rel="noopener" class="underline">{r.title}</a> : r.title}
+              {r.note && <span class="text-gray-600 dark:text-gray-400"> — {r.note}</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ) : null}
+
+    {notes.length ? (
+      <section class="flex flex-col gap-3">
+        <h3 class="text-lg font-semibold">Notes</h3>
+        <ul class="flex flex-col gap-2">
+          {notes.map((n) => (
+            <li>
+              <div class="font-medium">{n.title}</div>
+              <p class="text-sm text-gray-700 dark:text-gray-300">{n.body}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ) : null}
+  </div>
+)}

@@ -1,0 +1,58 @@
+---
+import Link from "@components/Link.astro";
+
+type ReferenceItem = { title: string; url?: string; note?: string };
+type NoteItem = { title: string; body: string };
+
+interface Props {
+  references?: ReferenceItem[];
+  notes?: NoteItem[];
+}
+
+const { references = [], notes = [] } = Astro.props as Props;
+---
+
+{(references.length || notes.length) && (
+  <div class="flex flex-col gap-6 mt-10">
+    {references.length ? (
+      <section class="flex flex-col gap-3">
+        <h3 class="text-lg font-semibold">References</h3>
+        <ul class="flex flex-col gap-2">
+          {references.map((r) => (
+            <li class="text-sm">
+              {r.url ? (
+                <span>
+                  {r.title} ({new URL(r.url).hostname}). Available at: <Link href={r.url} target="_blank" class="underline">{r.url}</Link>
+                  {r.note && <span class="text-gray-600 dark:text-gray-400"> [{r.note}]</span>}
+                </span>
+              ) : (
+                <span>
+                  {r.title}
+                  {r.note && <span class="text-gray-600 dark:text-gray-400"> [{r.note}]</span>}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ) : null}
+
+    {notes.length ? (
+      <section class="flex flex-col gap-3 mt-8 border-t pt-6">
+        <h3 class="text-lg font-semibold">Footnotes</h3>
+        <ul class="flex flex-col gap-4">
+          {notes.map((n, i) => (
+            <li id={`note-${i + 1}`} class="flex gap-2">
+              <sup class="font-medium">{i + 1}</sup>
+              <div class="flex flex-col">
+                <div class="font-medium">{n.title}</div>
+                <p class="text-sm text-gray-700 dark:text-gray-300">{n.body}</p>
+                <a href={`#note-ref-${i + 1}`} class="text-xs mt-1 text-gray-500">↩ Back to reference</a>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ) : null}
+  </div>
+)}
