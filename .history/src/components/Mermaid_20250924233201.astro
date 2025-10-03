@@ -1,0 +1,78 @@
+---
+interface Props {
+  code: string;
+  id?: string;
+}
+
+const { code, id = `mermaid-${Math.random().toString(36).substring(2, 11)}` } = Astro.props;
+---
+
+<div class={`mermaid-container ${id}`}>
+  <div class="mermaid" data-mermaid-code={code}>
+    {code}
+  </div>
+</div>
+
+<script>
+  import mermaid from 'mermaid';
+
+  // Initialize Mermaid
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'default',
+    themeVariables: {
+      primaryColor: '#3b82f6',
+      primaryTextColor: '#374151',
+      primaryBorderColor: '#e5e7eb',
+      lineColor: '#6b7280',
+      secondaryColor: '#f3f4f6',
+      tertiaryColor: '#ffffff',
+    }
+  });
+
+  function renderMermaid() {
+    const mermaidElements = document.querySelectorAll('.mermaid');
+    
+    mermaidElements.forEach(async (element) => {
+      const code = element.getAttribute('data-mermaid-code');
+      if (code && !element.getAttribute('data-processed')) {
+        try {
+          const { svg } = await mermaid.render(`mermaid-${Date.now()}`, code);
+          element.innerHTML = svg;
+          element.setAttribute('data-processed', 'true');
+        } catch (error) {
+          console.error('Mermaid rendering error:', error);
+          element.innerHTML = `<pre><code>${code}</code></pre>`;
+        }
+      }
+    });
+  }
+
+  // Render eagerly (handles SSR where DOMContentLoaded already fired)
+  renderMermaid();
+
+  // Render on initial load and across Astro navigation
+  document.addEventListener('astro:page-load', renderMermaid);
+  document.addEventListener('DOMContentLoaded', renderMermaid);
+  document.addEventListener('astro:after-swap', renderMermaid);
+</script>
+
+<style>
+  .mermaid-container {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .mermaid {
+    display: block;
+    width: 100%;
+  }
+
+  .mermaid svg {
+    width: 100% !important;
+    height: auto;
+  }
+</style>
