@@ -10,6 +10,8 @@ It was designed as an even more minimal theme than my popular theme [Astro Spher
 
 [![Deploy with Vercel](_deploy_vercel.svg)](https://vercel.com/new/clone?repository-url=https://github.com/markhorn-dev/astro-nano)  [![Deploy with Netlify](_deploy_netlify.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/markhorn-dev/astro-nano)
 
+For Vercel deployments, set `SITE_URL` to your production domain so canonical URLs, the sitemap, and `robots.txt` resolve correctly during builds.
+
 ## 📋 Features
 
 - ✅ 100/100 Lighthouse performance

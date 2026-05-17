@@ -4,12 +4,18 @@ import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 
+const site =
+  process.env.SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:4321");
+
 export default defineConfig({
-  site: "https://astro-nano-demo.vercel.app",
-  integrations: [mdx(), sitemap(), tailwind(), react()], 
+  site,
+  integrations: [mdx(), sitemap(), tailwind(), react()],
   markdown: {
     syntaxHighlight: {
-      type: 'shiki',
+      type: "shiki",
     },
   },
 });

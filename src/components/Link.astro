@@ -7,15 +7,21 @@ type Props = {
   underline?: boolean;
   // For React TSX usage, accept children and target explicitly
   target?: "_self" | "_blank" | "_parent" | "_top";
-  children?: any;
-}
+  rel?: string;
+  children?: unknown;
+};
 
-const { href, external, underline = true, target, ...rest } = Astro.props;
+const { href, external, underline = true, target, rel, ...rest } = Astro.props;
+const resolvedTarget = target ? target : (external ? "_blank" : "_self");
+const resolvedRel = resolvedTarget === "_blank"
+  ? rel ? `noopener noreferrer ${rel}` : "noopener noreferrer"
+  : rel;
 ---
 
 <a 
   href={href} 
-  target={ target ? target : (external ? "_blank" : "_self") } 
+  target={resolvedTarget}
+  rel={resolvedRel}
   class={cn("inline-block decoration-black/15 dark:decoration-white/30 hover:decoration-black/25 hover:dark:decoration-white/50 text-current hover:text-black hover:dark:text-white transition-colors duration-300 ease-in-out", underline && "underline underline-offset-2")}
   {...rest}>
   <slot/>
