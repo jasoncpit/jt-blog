@@ -1,0 +1,81 @@
+---
+title: "Iteratively Generating 360° Panoramas with AI"
+description: "Exploring counterfactual views of streets and landmarks"
+date: "Oct 04 2025"
+demoURL: "https://jasoncpit.github.io/Generative-Pano/"
+repoURL: "https://github.com/jasoncpit/Generative-Pano"
+---
+
+![pano](/pano-demo.jpeg)
+
+This project began with a simple question: *what if we could stand inside an AI-generated alternate version of a place?*  
+
+Most generative image tools give you a single snapshot. I wanted something more immersive: an **iterative workflow for creating 360° panoramas** that let you look around in all directions, as if you were inside a “what-if machine.” The aim was to explore applications across **urban planning, education, and cultural tourism** — areas where immersion really matters.
+
+---
+
+## From Samples to Panoramas  
+
+The system starts with a set of about 50 sample images. These act as seeds for generating spherical projections. A user can view the pano in-browser, then refine it with prompts — for example, changing the season, adding street furniture, or reimagining the architecture.  
+
+Each step builds on the previous panorama, producing a chain of iterations. The workflow looks something like this:  
+
+<Mermaid code={`
+sequenceDiagram
+    participant U as User
+    participant S as Sample Images
+    participant G as Generator
+    participant I as Iteration Engine
+    participant V as Viewer
+
+    U->>S: provide ~50 base images
+    S->>G: conditioning context
+    G->>I: generate initial pano
+    I->>U: return 360° view
+    U->>I: new prompt (e.g. season, design)
+    I->>G: update with conditions
+    G->>V: regenerate pano
+    V->>U: immersive exploration
+`} />
+
+The result isn’t just a static render, but an **interactive panorama** that can be nudged, reshaped, and reimagined.
+
+---
+
+## What Emerged  
+
+Three domains stood out where this kind of workflow feels especially valuable:  
+
+### 1. Urban Planning & Architecture  
+A local council could preview “before–after” designs: bike lanes added, trees planted, lighting shifted to evening. Instead of flat diagrams, residents could *stand in the middle of the street* and judge if the redesign feels right.  
+
+**Prompt example:**  
+*“Take this panorama of Main Street. Add a protected bike lane, plant trees along the curb, and render the scene at golden-hour sunset.”*  
+
+---
+
+### 2. Education & Storytelling  
+History teachers could drop students inside the past. Trafalgar Square in 1850: gas lamps instead of LEDs, horse-drawn carriages instead of buses, a coal-smog haze in the air. Geography students could explore glacial valleys or speculative climate futures.  
+
+**Prompt example:**  
+*“Using this panorama of Trafalgar Square, reconstruct it as in 1850: gas lamps, horse-drawn carriages, pedestrians in Victorian clothing, and a smoky haze.”*  
+
+---
+
+### 3. Tourism & Cultural Heritage  
+Tourism boards could showcase the same landmark across seasons: a Kyoto shrine glowing red in autumn, blanketed by snow in winter, or drenched in monsoon rain. Travelers don’t just see the place — they *feel themselves inside it.*  
+
+**Prompt example:**  
+*“Transform this panorama of Fushimi Inari Shrine into an autumn scene: red-orange maple leaves, fallen leaves on the path, soft sunlight through the torii gates.”*  
+
+---
+
+## Lessons and Next Steps  
+
+The exercise revealed that panoramas amplify the impact of generative imagery. Because you’re inside them, small changes — a tree here, different lighting there — feel embodied, not abstract. That makes them powerful for engagement, teaching, and imagination.  
+
+Challenges remain. Panos can warp under heavy edits; iterative prompts sometimes drift too far from realism. Anchoring generation more tightly to depth maps or existing 3D scans could improve consistency.  
+
+Still, even with these quirks, the project shows how **AI can generate immersive counterfactuals of place**. Not just predicting what is, but letting us explore what was, what could be, and what we imagine.  
+
+---

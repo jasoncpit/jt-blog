@@ -1,0 +1,114 @@
+---
+title: "Iterative Generation of 360° Panoramas with Imagen Nano Banana"
+description: "A workflow for immersive urban, educational, and cultural applications"
+date: "Oct 04 2025"
+demoURL: "https://generative-pano.vercel.app/"
+repoURL: "https://github.com/jasoncpit/generative-pano"
+---
+import Mermaid from '@components/Mermaid.astro';
+
+Most generative models today are trained to produce perspective-based, single-frame images. But panoramic imagery requires a very different geometry: the **equirectangular projection**, where the full 360° field of view is “unwrapped” into a rectangle. This project was designed as an experiment: **can a state-of-the-art image generation model natively handle equirectangular images, without explicit panorama-aware finetuning?**  Also to further investigate whether panoramas can serve as a medium for counterfactual exploration in urban spaces: streets redesigned for cyclists, historical squares reconstructed, or landmarks visualized across seasons.
+
+Unlike static renders, panoramas are immersive — users can view them in a spherical viewer and assess changes from within the scene. This makes them a strong candidate for domains such as **urban planning, education, and tourism**.
+
+## Why This Matters  
+
+360° imagery underpins a wide range of applications — from **urban planning visualizations** to **immersive cultural heritage** and **VR/AR content pipelines**. Traditional methods use stitched multi-camera rigs or specialized models like **PanoDR** ([Sun et al., 2022](https://arxiv.org/abs/2210.07643)) and **Panoptic NeRF** ([Leroy et al., 2023](https://arxiv.org/abs/2301.06014)) that explicitly encode spherical geometry.  
+
+If general-purpose text-to-image models could handle equirectangular projections natively, it would lower barriers to pano content creation — no special cameras, no stitched rigs, just prompts and iterations.  
+
+## Workflow Overview  
+
+The pipeline is designed around three principles:  
+1. **Seed conditioning** — start with ~25 reference images to establish context and spatial consistency.  
+2. **Iterative generation** — generate a base panorama, then apply prompt-based edits in rounds.  
+3. **Interactive viewing** — serve the result as a 360° sphere that can be explored in-browser.  
+
+<Mermaid code={`
+sequenceDiagram
+    participant U as User
+    participant R as Reference Images
+    participant G as Imagen Nano Banana
+    participant I as Iteration Engine
+    participant V as Pano Viewer
+
+    U->>R: provide ~25 conditioning samples
+    R->>G: establish context
+    G->>I: generate initial pano
+    I->>U: render 360° preview
+    U->>I: prompt new edits (season, design, objects)
+    I->>G: refine pano with constraints
+    G->>V: updated panorama tiles
+    V->>U: immersive exploration
+`} />
+
+
+## Model Choice: Nano Banana  
+
+For this task I used **Gemini 2.5 Flash Image** (also known as "Nano Banana"), which has dominated image generation benchmarks since its release by Google in late 2025. The model reached #1 on LMArena's leaderboards for both Text-to-Image and Image Editing tasks, with significant Elo rating leads over competitors. Its **consistency in iterative editing** has been particularly noteworthy.
+
+Most generative models tend to drift when repeatedly re-prompted — facades collapse, objects morph unpredictably. However, Gemini 2.5 Flash Image has demonstrated remarkable stability, achieving top preference scores in human evaluations on both GenAI-Bench and LMArena for maintaining coherence across multiple edits. As validated through these comprehensive benchmarks, it shows significant improvements in:
+
+- **Structure preservation** — edits respect the global geometry of the scene.  
+- **Prompt adherence** — changes (e.g. “add trees”) appear without destabilizing surrounding features.  
+- **Multi-round refinements** — enables chained edits like “winter → night scene → add pedestrians” while maintaining coherence.  
+
+This makes it especially suited for **360° generation**, where distortions accumulate quickly across the sphere if edits are unstable.
+
+## Implementation Notes  
+
+- **Containerization**: The pipeline runs inside a Docker container for portability.  
+- **Backend**: A lightweight FastAPI service wraps the generation requests and handles tiling.  
+- **Frontend**: A Next.js application with pannellum handles streaming equirectangular outputs, rendering them as interactive 360° spheres using client-side components.
+- **Iteration Loop**: Prompts are chained; each new edit is conditioned on the last generated pano rather than starting from scratch.  
+
+The full code and starter template are available in the [GitHub repo](https://github.com/jasoncpit/generative-pano).
+
+## Observations  
+
+1. **Projection Consistency**  
+   - Nano Banana preserved equirectangular structure better than expected.  
+   - Poles (top/bottom distortions) still warped under large edits, similar to [problems noted in Stable Diffusion panos](https://stable-diffusion-art.com/360-panoramic-images/).  
+   - Jason: Add more notes here. 
+   
+2. **Iterative Editing**  
+   - Multi-round prompts (e.g. *summer → winter → night → add people*) retained global geometry, unlike models that collapse after 2–3 edits.  
+   - Editing stability matches findings in Comet’s [Nano Banana feature benchmark](https://www.cometapi.com/gemini-2-5-flash-imagenano-banana-feature-benchmark-and-usage).  
+   - Jason: Add more notes here. 
+
+3. **Limitations**  
+   - Vertical stretching at poles remains unsolved.  
+   - Seam artifacts appear under heavy transformations.  
+   - Lack of spherical inductive bias compared to panorama-trained GANs (e.g. [HoHoNet](https://arxiv.org/abs/2008.07943), [SphereNet](https://arxiv.org/abs/1808.10801)).  
+   - Jason: Add more notes here. 
+
+## Example Applications Tested  
+
+- **Urban Planning**: visualizing bike lanes, tree-lined streets, and lighting scenarios in 360°.  
+- **Education**: reconstructing Trafalgar Square (1850) with gas lamps and carriages.  
+- **Tourism**: transforming Kyoto’s Fushimi Inari Shrine into seasonal variations.  
+
+Each case stressed the iterative editing loop and projection stability.  
+
+
+## Lessons
+
+Nano Banana is sturdier than I expected. Iterative edits don’t collapse the pano the way older diffusion models do — the geometry mostly hangs together. Still, the model isn’t pano-aware. Poles stretch, seams warp, the same old artifacts show up. It feels like borrowing a tool for a job it wasn’t trained for.
+
+Future paths I’d like to try:
+
+See if depth priors like MiDaS
+ can anchor edits so they don’t drift.
+
+Fine-tune on true equirectangular data (SUN360, Matterport3D) instead of faking it.
+
+Experiment with hybrids: NeRF/3DGS for structure, diffusion for filling in the gaps.
+
+## Conclusion
+
+This project isn’t a product. It’s more like an open-ended trial balloon: what happens if we push a general-purpose diffusion model into a spherical world? The answer so far — it kind of works. Enough for playful “what-if” panoramas, not enough for VR production.
+
+Code and a minimal viewer are here: GitHub: generative-pano
+.
+
+The bigger question nags at me: should we bend general-purpose models until they learn the sphere, or accept their limits and build hybrids that bridge 2D and 3D? That choice feels like it will determine whether immersive generative tools become everyday, or stay in the lab.
