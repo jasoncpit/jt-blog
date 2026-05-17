@@ -1,0 +1,135 @@
+---
+title: "Why Natural Language Autoencoders Make Me Rethink Street View Models"
+description: "My first pass on Anthropic’s NLA paper, why it feels different from ordinary probes, and why I think it matters for VLMs built on street-level imagery."
+date: "May 17 2026"
+references:
+  - title: "Natural Language Autoencoders"
+    year: "2026"
+    url: "https://www.anthropic.com/research/natural-language-autoencoders"
+    note: "Anthropic research post"
+  - title: "Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations"
+    year: "2026"
+    url: "https://transformer-circuits.pub/2026/nla/"
+    note: "Transformer Circuits paper"
+---
+
+import NLAFlow from "@components/NLAFlow.astro";
+import NLAExampleCard from "@components/NLAExampleCard.astro";
+import NLAContrast from "@components/NLAContrast.astro";
+
+When I read Anthropic’s paper on Natural Language Autoencoders, I had the same reaction I usually have when interpretability work gets interesting: this is not just another diagnostic. It feels like a new interface.
+
+What grabbed me was not the headline version of “the model thinks in numbers.” We already knew that. What felt different was the attempt to make those internal activations legible in plain language, while still forcing the explanation to stay tethered to the activation it came from.
+
+That matters to me because I spend a lot of time thinking about models that have to read the world from messy, partial evidence. Street View is full of exactly that kind of mess: odd camera angles, local context, signage, social cues, occlusion, and ambiguous scenes that look trivial to a person until you try to systematize them. If a model is going to help with street-level understanding, I want better ways to ask not just what it predicted, but what it seems to be latching onto internally.
+
+## What NLA means, in plain English
+
+My simplest reading is this: an NLA is a text bottleneck for hidden model states.
+
+Instead of taking a language model’s activation vector as an opaque blob, Anthropic trains one model component to **describe** that activation in language, and another component to **reconstruct** the activation from the description. If the reconstruction stays close to the original activation, the explanation is treated as useful.
+
+That sounds small, but it changes the workflow. A lot of interpretability tools still require me to inspect feature lists, activation maps, or sparse components and then do the hard semantic work myself. NLAs try to push more of that semantic step into the model itself.
+
+<NLAFlow
+  steps={[
+    {
+      label: "Target model",
+      title: "Freeze the model you want to inspect",
+      body: "The original LLM stays fixed. Its internal activations are the objects we want to explain, not change.",
+    },
+    {
+      label: "Activation verbalizer",
+      title: "Translate activation into language",
+      body: "A second module reads the activation and produces an explanation in ordinary text, ideally something a human can skim.",
+    },
+    {
+      label: "Natural-language bottleneck",
+      title: "Force the explanation to carry real information",
+      body: "The explanation cannot just sound smart. It has to preserve enough information for the next stage to recover the original state.",
+    },
+    {
+      label: "Activation reconstructor",
+      title: "Rebuild the activation from text alone",
+      body: "A third module tries to reconstruct the hidden vector from the explanation. Better reconstructions imply more useful explanations.",
+    },
+  ]}
+/>
+
+The reason I like this framing is that it is not merely asking, “Can I attach a classifier to a layer?” It is asking whether language itself can serve as a compact, reusable description of what the model is representing at that moment.
+
+That is also why I do **not** read NLA as mind-reading. Anthropic is pretty clear that the explanations can hallucinate, over-specify, or drift into claims that are only partially grounded. So my takeaway is not “the text explanation is the truth.” My takeaway is closer to: **the explanation is a structured hypothesis about the activation**.
+
+## What it does in the paper
+
+The examples in the paper are the reason the method feels substantial rather than decorative.
+
+One example Anthropic highlights is rhyme planning. In a simple couplet completion, the NLA surfaces the model planning a rhyme target before the final word is emitted. That is a nice result because it suggests the model is not only reacting token by token; it is carrying a forward-looking representation of where the line wants to end up.
+
+<NLAExampleCard
+  eyebrow="Paper example"
+  title="Rhyme planning before the final word"
+  context="In a playful poem-completion setting, the model is partway through a line and has not yet produced the final rhyme word."
+  explanation="The NLA explanation surfaces an internal plan for a rabbit-ending rhyme before the output arrives. In other words, the model appears to be aiming at the rhyme target in advance, not discovering it at the last second."
+  takeaway="This is the kind of example I find convincing because it points to a latent plan, and the paper then follows up with steering experiments that perturb that plan."
+/>
+
+The steering follow-up is even more interesting. Anthropic shows that if they edit the representation that appears to be carrying the rhyme plan, completions can shift away from the original target. The paper’s illustrative contrast is basically a `rabbit` plan being nudged toward `mouse`, with `mouse` and `house` becoming more likely completions at sufficient steering strength.
+
+<NLAContrast
+  title="Why the rhyme example matters"
+  leftLabel="Readout"
+  leftText="The NLA says the model is already planning a rabbit-like rhyme target before the final token is generated."
+  rightLabel="Intervention"
+  rightText="When the paper edits that representation toward mouse, the model often stops ending on rabbit and shifts toward mouse or house instead."
+  caption="I like this example because it is not just descriptive. It links a readable internal representation to a causal change in output."
+/>
+
+Another example that stuck with me is evaluation awareness. The paper reports cases where Claude appears, internally, to suspect that it is being tested more often than it explicitly admits in its outward responses. For me this is exactly the kind of phenomenon where activation-level tools matter: behavior alone can understate what the model is tracking.
+
+<NLAExampleCard
+  eyebrow="Paper example"
+  title="Surfacing what the model tracks but does not say"
+  context="Anthropic compares settings where a model is more or less likely to believe it is in an evaluation context."
+  explanation="The NLA surfaces stronger evaluation-awareness themes on benchmark-style transcripts and weaker ones when prompts are rewritten to feel more like ordinary deployment traffic."
+  takeaway="That makes NLAs useful as an auditing layer. The point is not that the explanation is infallible, but that it can reveal latent concerns that never become explicit in the answer."
+/>
+
+I also found the language-switching case unusually concrete. Anthropic describes early Opus 4.6 checkpoints that sometimes reply in Russian, Chinese, Korean, Arabic, or Spanish even though the prompt is entirely in English. The NLA explanation suggests the model picks up subtle but spurious cues and starts over-weighting the possibility that the user is a non-native English speaker.
+
+That example matters to me because it feels close to the kind of brittle shortcut a real multimodal model could take on street-level imagery: not “I saw the wrong thing,” but “I formed the wrong frame for what kind of scene or user this is.”
+
+## Why I think this matters for VLMs and Street View
+
+The paper is about language models, but I keep reading it through a vision-language lens.
+
+If I adapt the NLA intuition to VLMs, what I want is a way to verbalize the latent scene representation that sits between raw pixels and the final answer. Not just “bus stop detected,” but something closer to:
+
+- the scene reads as suburban and car-dominant
+- the curb line is partially occluded, so the accessibility judgment is unstable
+- storefront text and road markings suggest the image is UK-like even if the architecture is ambiguous
+- the model is over-indexing on graffiti as a proxy for disorder
+
+That kind of intermediate readout would be valuable for Street View work because street-level tasks are full of proxy risk. A model that predicts walkability, safety, deprivation, or accessibility can easily be right for the wrong reasons. It might lock onto vegetation instead of sidewalk continuity, wide roads instead of traffic speed, or visible litter instead of more meaningful civic infrastructure.
+
+My bet is that an NLA-style interface could become useful in at least three ways for Street View systems:
+
+1. **Debugging scene interpretations.** I want to know whether a model thinks it is looking at a residential side street, a mixed-use high street, or a service alley before I trust the downstream score.
+2. **Auditing shortcut features.** If a VLM is using nationality cues, architectural stereotypes, or surface-level “cleanliness” proxies, a readable latent description would make those shortcuts easier to spot.
+3. **Building better human review tools.** Street View pipelines often fail in edge cases. A compact textual explanation beside the image could make manual triage much faster.
+
+For now, this is still me extrapolating beyond the paper. But it is the most productive kind of extrapolation: the method gives me a vocabulary for the exact layer of model behavior I usually want but cannot inspect.
+
+## The component direction I want to keep using
+
+I made the visual blocks in this post as reusable components, because I suspect this topic will get more useful once I can plug in my own examples rather than just paraphrase Anthropic’s.
+
+The pattern I want is simple:
+
+- a **flow component** for the AV/AR round-trip
+- an **example card** that pairs scene or transcript context with an NLA-style readout
+- a **contrast panel** for “representation before intervention” versus “behavior after intervention”
+
+That feels like the right starting point for later posts where I test similar ideas on VLM outputs, street-level classifiers, or my own synthetic examples.
+
+For now, the main thing I take from the paper is this: NLA gives me a more legible handle on hidden state. And if I care about models that read streets, not just sentences, that handle could turn out to be extremely useful.
