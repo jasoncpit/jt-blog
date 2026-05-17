@@ -97,7 +97,7 @@ const stageLabel = (s: string) => ({seed:"Seed 🌱",sprout:"Sprout 🌿",dorman
           <details class="mt-3">  
             <summary class="cursor-pointer">Show research log ({idea.data.initialResearch.length} entries)</summary> 
             <ul class="mt-3 space-y-2">
-              {idea.data.initialResearch.map((r: any) => (
+              {idea.data.initialResearch.map((r) => (
                 <li class="p-3 rounded-lg border border-gray-200/60 dark:border-zinc-800">
                   <div class="font-medium">
                     {r.url ? <a href={r.url} target="_blank" rel="noopener" class="underline">{r.title}</a> : r.title}
@@ -118,7 +118,7 @@ const stageLabel = (s: string) => ({seed:"Seed 🌱",sprout:"Sprout 🌿",dorman
           <details class="mt-3">
             <summary class="cursor-pointer">Show progress log ({idea.data.progressLog.length} entries)</summary>
             <ol class="mt-3 space-y-2">
-              {idea.data.progressLog.map((l: any) => (
+              {idea.data.progressLog.map((l) => (
                 <li class="p-3 rounded-lg border border-gray-200/60 dark:border-zinc-800">
                   <span class="font-medium">{l.date}</span> — {l.note}
                 </li>

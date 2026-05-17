@@ -14,35 +14,49 @@ const { code, id = `mermaid-${Math.random().toString(36).substring(2, 11)}` } = 
 </div>
 
 <script>
-  import mermaid from 'mermaid';
+  import mermaid from "mermaid";
 
   // Initialize Mermaid
   mermaid.initialize({
     startOnLoad: false,
-    theme: 'default',
+    securityLevel: "strict",
+    theme: "default",
     themeVariables: {
-      primaryColor: '#3b82f6',
-      primaryTextColor: '#374151',
-      primaryBorderColor: '#e5e7eb',
-      lineColor: '#6b7280',
-      secondaryColor: '#f3f4f6',
-      tertiaryColor: '#ffffff',
-    }
+      primaryColor: "#3b82f6",
+      primaryTextColor: "#374151",
+      primaryBorderColor: "#e5e7eb",
+      lineColor: "#6b7280",
+      secondaryColor: "#f3f4f6",
+      tertiaryColor: "#ffffff",
+    },
   });
 
   function renderMermaid() {
-    const mermaidElements = document.querySelectorAll('.mermaid');
-    
-    mermaidElements.forEach(async (element) => {
-      const code = element.getAttribute('data-mermaid-code');
-      if (code && !element.getAttribute('data-processed')) {
+    const mermaidElements = document.querySelectorAll(".mermaid");
+
+    mermaidElements.forEach(async (element, index) => {
+      const code = element.getAttribute("data-mermaid-code");
+      if (code && !element.getAttribute("data-processed")) {
         try {
-          const { svg } = await mermaid.render(`mermaid-${Date.now()}`, code);
-          element.innerHTML = svg;
-          element.setAttribute('data-processed', 'true');
+          const renderId = `mermaid-${index}-${Date.now()}`;
+          const { svg } = await mermaid.render(renderId, code);
+          const template = document.createElement("template");
+          template.innerHTML = svg.trim();
+          const svgNode = template.content.firstElementChild;
+
+          if (!(svgNode instanceof SVGElement)) {
+            throw new Error("Mermaid did not return an SVG element");
+          }
+
+          element.replaceChildren(svgNode);
+          element.setAttribute("data-processed", "true");
         } catch (error) {
-          console.error('Mermaid rendering error:', error);
-          element.innerHTML = `<pre><code>${code}</code></pre>`;
+          console.error("Mermaid rendering error:", error);
+          const pre = document.createElement("pre");
+          const codeElement = document.createElement("code");
+          codeElement.textContent = code;
+          pre.appendChild(codeElement);
+          element.replaceChildren(pre);
         }
       }
     });
@@ -52,9 +66,9 @@ const { code, id = `mermaid-${Math.random().toString(36).substring(2, 11)}` } = 
   renderMermaid();
 
   // Render on initial load and across Astro navigation
-  document.addEventListener('astro:page-load', renderMermaid);
-  document.addEventListener('DOMContentLoaded', renderMermaid);
-  document.addEventListener('astro:after-swap', renderMermaid);
+  document.addEventListener("astro:page-load", renderMermaid);
+  document.addEventListener("DOMContentLoaded", renderMermaid);
+  document.addEventListener("astro:after-swap", renderMermaid);
 </script>
 
 <style>
