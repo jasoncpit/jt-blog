@@ -1,5 +1,5 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import { type CollectionEntry, getCollection, render } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
@@ -12,7 +12,7 @@ export async function getStaticPaths() {
     .filter((post) => !post.data.draft)
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
   return ideas.map((idea) => ({
-    params: { slug: idea.slug },
+    params: { slug: idea.id },
     props: idea,
   }));
 }
@@ -26,7 +26,8 @@ export async function determineStage(progress: number) {
 }
 
 const idea = Astro.props;
-const { Content } = await idea.render();
+const { Content } = await render(idea);
+const body = idea.body ?? "";
 
 const stage = await determineStage(idea.data.progress);
 
@@ -52,7 +53,7 @@ const stageLabel = (s: string) => ({seed:"Seed 🌱",sprout:"Sprout 🌿",dorman
       <div class="animate flex flex-wrap items-center gap-2 text-sm text-gray-500">
         <FormattedDate date={idea.data.date} />
         <span>&bull;</span>
-        <span>{readingTime(idea.body)}</span>
+        <span>{readingTime(body)}</span>
         {idea.data.timeEstimate && (<><span>&bull;</span><span>{idea.data.timeEstimate}</span></>)}
         {idea.data.skills?.length ? (
           <ul class="flex gap-1.5 flex-wrap py-1.5">
