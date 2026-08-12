@@ -2,14 +2,24 @@
 title: "Iterative Generation of 360° Panoramas with Imagen Nano Banana"
 description: "A workflow for immersive urban, educational, and cultural applications"
 date: "Oct 04 2025"
+tags: ["Generative AI", "Panoramas", "Urban futures"]
+hero: "./pano-cover.webp"
 demoURL: "https://generative-pano.vercel.app/"
 repoURL: "https://github.com/jasoncpit/generative-pano"
 ---
 import Mermaid from '@components/Mermaid.astro';
+import YouTube from '@components/YouTube.astro';
+import panoCover from './pano-cover.webp';
 
 Most generative models today are trained to produce perspective-based, single-frame images. But panoramic imagery requires a very different geometry: the **equirectangular projection**, where the full 360° field of view is “unwrapped” into a rectangle. This project was designed as an experiment: **can a state-of-the-art image generation model natively handle equirectangular images, without explicit panorama-aware finetuning?**  Also to further investigate whether panoramas can serve as a medium for counterfactual exploration in urban spaces: streets redesigned for cyclists, historical squares reconstructed, or landmarks visualized across seasons.
 
 Unlike static renders, panoramas are immersive — users can view them in a spherical viewer and assess changes from within the scene. This makes them a strong candidate for domains such as **urban planning, education, and tourism**.
+
+<img src={panoCover.src} alt="Equirectangular generated panorama at sunset" />
+
+## Project video
+
+<YouTube id="BCpcDMLaTy4" title="Generative Pano project video" autoplay />
 
 ## Why This Matters  
 
@@ -24,8 +34,7 @@ The pipeline is designed around three principles:
 2. **Iterative generation** — generate a base panorama, then apply prompt-based edits in rounds.  
 3. **Interactive viewing** — serve the result as a 360° sphere that can be explored in-browser.  
 
-<Mermaid code={`![pano](/pano-demo.jpeg)
-sequenceDiagram
+<Mermaid code={`sequenceDiagram
     participant U as User
     participant R as Reference Images
     participant G as Imagen Nano Banana

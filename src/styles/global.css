@@ -19,18 +19,24 @@ body {
 body {
   @apply font-sans antialiased;
   @apply flex flex-col;
-  @apply bg-stone-100 dark:bg-stone-900;
-  @apply text-black/50 dark:text-white/75;
+  @apply bg-[#fcfbf9] dark:bg-stone-900;
+  @apply text-black/60 dark:text-white/75;
 }
 
 header {
-  @apply fixed top-0 left-0 right-0 z-50 py-5;
-  @apply bg-stone-100/75 dark:bg-stone-900/25;
-  @apply backdrop-blur-sm saturate-200;
+  @apply fixed top-0 left-0 right-0 z-50 bg-[#fcfbf9]/95 dark:bg-stone-900/95;
+}
+
+.site-nav {
+  @apply mx-auto max-w-screen-md border-b border-black/10 px-6 py-5 dark:border-white/15;
+}
+
+.site-nav nav {
+  @apply flex justify-center gap-7 text-sm text-black/80 dark:text-white/80;
 }
 
 main {
-  @apply flex-1 py-32;
+  @apply flex-1 pb-24 pt-36;
 }
 
 footer {
@@ -41,6 +47,165 @@ article {
   @apply max-w-full prose dark:prose-invert prose-img:mx-auto prose-img:my-auto;
   @apply prose-headings:font-semibold prose-p:font-serif;
   @apply prose-headings:text-black prose-headings:dark:text-white;
+}
+
+.archive-entry__kind,
+.project-card__placeholder {
+  @apply font-sans text-[0.68rem] font-semibold uppercase tracking-[0.16em];
+}
+
+.project-list {
+  @apply grid gap-x-8 gap-y-12 sm:grid-cols-2;
+}
+
+.project-card {
+  @apply block min-w-0 text-current;
+}
+
+.project-card__hero {
+  @apply relative aspect-[1.38] overflow-hidden rounded-lg bg-[var(--project-tone)] transition-transform duration-500 ease-out;
+  @apply group-hover:-translate-y-1 dark:brightness-90;
+}
+
+.project-card__hero img {
+  @apply size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025];
+}
+
+.project-card__placeholder {
+  @apply flex size-full flex-col justify-between p-5 text-black/55 dark:text-black/65;
+  background-image: linear-gradient(135deg, rgba(255,255,255,.5), transparent 58%);
+}
+
+.project-card__arrow {
+  @apply absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white/80 text-base text-black/65 opacity-0 transition-all duration-300;
+  @apply -translate-y-1 group-hover:translate-y-0 group-hover:opacity-100;
+}
+
+.project-card__copy {
+  @apply mt-3;
+}
+
+.project-card h2 {
+  @apply text-lg font-semibold leading-snug tracking-[-0.025em] text-black dark:text-white;
+}
+
+.project-card p {
+  @apply mt-1 font-serif text-sm italic leading-relaxed text-black/55 dark:text-white/60;
+}
+
+.project-card p span {
+  @apply not-italic;
+}
+
+.project-list--compact {
+  @apply gap-y-8;
+}
+
+.home-intro {
+  @apply grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-7 gap-y-6 sm:gap-x-10;
+}
+
+.home-intro__copy {
+  @apply min-w-0;
+}
+
+.home-intro__portrait {
+  @apply self-center;
+}
+
+.home-intro__portrait img {
+  @apply size-28 rounded-full border border-black/10 object-cover object-[50%_42%] sm:size-52 dark:border-white/15;
+}
+
+.archive-entry__title {
+  @apply mt-2 font-serif text-4xl leading-[1.02] tracking-[-0.05em] text-black dark:text-white sm:text-5xl;
+}
+
+.archive-entry__description {
+  @apply mt-4 max-w-xl font-serif text-lg leading-relaxed;
+}
+
+.youtube-embed {
+  @apply my-8 aspect-video overflow-hidden rounded-lg bg-black shadow-sm;
+}
+
+.youtube-embed iframe {
+  @apply size-full border-0;
+}
+
+.entry-frame {
+  @apply mx-auto grid max-w-[1180px] px-6 lg:grid-cols-[10rem_minmax(0,34rem)_12rem] lg:gap-x-10;
+}
+
+.entry-frame__main {
+  @apply min-w-0;
+}
+
+.entry-frame__toc,
+.entry-frame__references {
+  @apply hidden lg:block;
+}
+
+.entry-frame__toc > *,
+.entry-frame__references > * {
+  @apply sticky top-28;
+}
+
+.entry-frame__mobile-references {
+  @apply lg:hidden;
+}
+
+.entry-toc {
+  @apply border-l border-black/10 pl-4 text-xs dark:border-white/15;
+}
+
+.entry-toc > p,
+.reference-rail__title {
+  @apply mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-black/45 dark:text-white/45;
+}
+
+.entry-toc ol {
+  @apply space-y-1.5;
+}
+
+.entry-toc li {
+  @apply relative;
+}
+
+.entry-toc a {
+  @apply block text-black/45 transition-all duration-300 hover:text-black dark:text-white/45 dark:hover:text-white;
+}
+
+.entry-toc a[aria-current] {
+  @apply translate-x-1 font-medium text-black dark:text-white;
+}
+
+.entry-toc a[aria-current]::before {
+  @apply absolute -left-[1.07rem] top-1/2 size-1 -translate-y-1/2 rounded-full bg-black dark:bg-white;
+  content: "";
+  animation: toc-dot 300ms ease-out;
+}
+
+.entry-toc__nested {
+  @apply pl-2;
+}
+
+.reference-rail {
+  @apply border-l border-black/10 pl-4 dark:border-white/15;
+}
+
+.reference-rail ol,
+.reference-rail p {
+  @apply text-xs leading-relaxed;
+}
+
+.reference-rail__note {
+  @apply border-t border-black/10 pt-3 dark:border-white/15;
+}
+
+@keyframes toc-dot {
+  from { transform: translateY(-50%) scale(0); }
+  to { transform: translateY(-50%) scale(1); }
 }
 
 @layer utilities {

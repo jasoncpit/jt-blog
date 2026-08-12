@@ -3,6 +3,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
+import latexMdx from "./src/plugins/latex-mdx.mjs";
 
 const site =
   process.env.SITE_URL ||
@@ -13,6 +14,14 @@ const site =
 export default defineConfig({
   site,
   integrations: [mdx(), sitemap(), tailwind(), react()],
+  vite: {
+    plugins: [latexMdx()],
+    // Mermaid's diagram modules import CommonJS dependencies such as dayjs.
+    // Pre-bundling keeps those imports browser-compatible in local previews.
+    optimizeDeps: {
+      include: ["mermaid", "dayjs"],
+    },
+  },
   markdown: {
     syntaxHighlight: {
       type: "shiki",
