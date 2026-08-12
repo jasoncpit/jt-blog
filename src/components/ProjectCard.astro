@@ -8,7 +8,7 @@ const { title, description, date, kind, hero } = entry.data;
 const tone = ["#eaf0f5", "#f0ece6", "#eceef8", "#edf1eb"][index % 4];
 ---
 
-<a href={`/projects/${entry.slug}`} class="project-card group animate" style={`--project-tone: ${tone}`}>
+<a href={`/projects/${entry.id}`} class="project-card group animate" style={`--project-tone: ${tone}`}>
   <div class="project-card__hero">
     {hero ? (
       <Image src={hero} alt={`Preview of ${title}`} widths={[480, 768]} sizes="(min-width: 768px) 50vw, 100vw" />

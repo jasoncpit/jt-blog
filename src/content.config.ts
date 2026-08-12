@@ -1,7 +1,9 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 const work = defineCollection({
-  type: "content",
+  loader: glob({ base: "./src/content/work", pattern: "**/[^_]*.{md,mdx}" }),
   schema: z.object({
     company: z.string(),
     role: z.string(),
@@ -11,7 +13,7 @@ const work = defineCollection({
 });
 
 const projects = defineCollection({
-  type: "content",
+  loader: glob({ base: "./src/content/projects", pattern: "**/[^_]*.{md,mdx}" }),
   schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
@@ -25,44 +27,37 @@ const projects = defineCollection({
     references: z.array(z.object({
       title: z.string(),
       url: z.string().url().optional(),
-      note: z.string().optional()
+      note: z.string().optional(),
     })).default([]),
-    notes: z.array(z.object({ title: z.string(), body: z.string() })).default([])
+    notes: z.array(z.object({ title: z.string(), body: z.string() })).default([]),
   }),
 });
 
 const ideas = defineCollection({
-  type: "content",
+  loader: glob({ base: "./src/content/ideas", pattern: "**/[^_]*.{md,mdx}" }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
     draft: z.boolean().default(false),
-
-    // New fields 
-    summary: z.string().min(1), 
-    stage: z.enum(["seed", "sprout", "dormant", "bloom"]).default("seed"), 
-    progress: z.number().min(0).max(100).default(0), 
+    summary: z.string().min(1),
+    stage: z.enum(["seed", "sprout", "dormant", "bloom"]).default("seed"),
+    progress: z.number().min(0).max(100).default(0),
     nextSteps: z.string().optional(),
-    
     initialResearch: z.array(z.object({
       title: z.string(),
       url: z.string().url().optional(),
-      note: z.string().optional()
+      note: z.string().optional(),
     })).default([]),
-
     progressLog: z.array(z.object({
-      date: z.string(), // ISO or human string
-      note: z.string()
+      date: z.string(),
+      note: z.string(),
     })).default([]),
-
     skills: z.array(z.string()).default([]),
     timeEstimate: z.string().optional(),
-
-    // Keep if useful
     demoURL: z.string().url().optional(),
     repoURL: z.string().url().optional(),
-    tags: z.array(z.string()).default([])
+    tags: z.array(z.string()).default([]),
   }),
 });
 
