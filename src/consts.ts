@@ -25,8 +25,8 @@ export const WORK: Metadata = {
 };
 
 export const PROJECTS: Metadata = {
-  TITLE: "Projects",
-  DESCRIPTION: "A collection of my projects, with links to repositories and demos.",
+  TITLE: "Archive",
+  DESCRIPTION: "Projects, essays, and working notes by Jason Tang.",
 };
 
 export const IDEAS: Metadata = {

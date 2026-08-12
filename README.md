@@ -41,6 +41,38 @@ Rendered in ~40ms on localhost
 
 The blog posts on the demo serve as the documentation and configuration.
 
+### Archive authoring
+
+Every archive entry is a folder in `src/content/projects/`. Keep the MDX entry,
+its images/data, and its bespoke visual components together:
+
+```text
+src/content/projects/my-entry/
+├── index.mdx
+├── cover.png
+├── data.csv
+└── components/
+    └── Comparison.astro
+```
+
+Import local assets and bespoke components from that entry:
+
+```mdx
+import cover from "./cover.png";
+import Comparison from "./components/Comparison.astro";
+
+![Description of the image](cover)
+<Comparison />
+```
+
+LaTex works in archive MDX. Use `$E = mc^2$` inline or a `$$...$$` block for a display equation, including full LaTex expressions:
+
+```mdx
+$$
+\int_0^1 x^2 dx = \frac{1}{3}
+$$
+```
+
 ## 💻 Commands
 
 All commands are run from the root of the project, from a terminal:

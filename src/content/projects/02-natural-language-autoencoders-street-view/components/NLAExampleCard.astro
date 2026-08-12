@@ -1,0 +1,44 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  context: string;
+  explanation: string;
+  takeaway?: string;
+}
+
+const { eyebrow, title, context, explanation, takeaway } = Astro.props as Props;
+---
+
+<section class="not-prose my-6 rounded-3xl border border-stone-200/80 bg-gradient-to-br from-white to-stone-50 p-5 shadow-sm shadow-stone-200/40 dark:border-stone-800 dark:from-stone-950 dark:to-stone-900 dark:shadow-none">
+  <div class="mb-4 space-y-1">
+    <p class="text-xs font-medium uppercase tracking-[0.18em] text-stone-500 dark:text-stone-400">
+      {eyebrow}
+    </p>
+    <h3 class="text-lg font-semibold text-black dark:text-white">{title}</h3>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-[1.1fr_1fr]">
+    <div class="rounded-2xl border border-stone-200 bg-white/90 p-4 dark:border-stone-800 dark:bg-stone-950/80">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-500 dark:text-stone-400">
+        Context
+      </p>
+      <p class="text-sm leading-6 text-stone-700 dark:text-stone-300">{context}</p>
+    </div>
+
+    <div class="rounded-2xl border border-stone-200 bg-stone-50/90 p-4 dark:border-stone-800 dark:bg-stone-900/80">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-500 dark:text-stone-400">
+        NLA readout
+      </p>
+      <p class="text-sm leading-6 text-black dark:text-white">{explanation}</p>
+    </div>
+  </div>
+
+  {takeaway && (
+    <div class="mt-4 rounded-2xl border border-dashed border-stone-300/90 px-4 py-3 dark:border-stone-700">
+      <p class="text-sm leading-6 text-stone-700 dark:text-stone-300">
+        <span class="font-semibold text-black dark:text-white">Why it matters:</span> {takeaway}
+      </p>
+    </div>
+  )}
+</section>

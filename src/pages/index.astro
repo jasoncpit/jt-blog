@@ -2,14 +2,11 @@
 import { getCollection } from "astro:content";
 import Container from "@components/Container.astro";
 import PageLayout from "@layouts/PageLayout.astro";
-import ArrowCard from "@components/ArrowCard.astro";
+import ProjectCard from "@components/ProjectCard.astro";
 import Link from "@components/Link.astro";
 import { SITE, HOME, SOCIALS } from "@consts";
-
-const blog = (await getCollection("blog"))
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0,SITE.NUM_POSTS_ON_HOMEPAGE);
+import { Image } from "astro:assets";
+import portrait from "@assets/jason-tang-portrait.jpeg";
 
 const projects = (await getCollection("projects"))
   .filter(project => !project.data.draft)
@@ -27,56 +24,43 @@ const projects = (await getCollection("projects"))
     </h4>
     <div class="space-y-16">
       <section>
-        <article class="space-y-4">
-          <p class="animate">
-            Hi, I'm Jason Tang — a data scientist with a background in Geography and Geocomputation, now working at the intersection of AI, data, and real-world decision making. My career started as a PhD researcher in Geocomputation, where I focused on urban analytics, spatial modelling, and the dynamics of cities at UCL. That foundation taught me to see data not just as numbers, but as patterns shaping the way people live, move, and interact.
-          </p>
-          
-          <p class="animate">
-            Today, my work spans applied machine learning, geospatial analysis, and AI-driven automation. I build systems that transform complex data into insights and tools — from production-scale Machine Learning pipelines in fintech, to experimental AI agents that simulate behaviour, or interactive maps that bring datasets to life. I'm  especially interested in bridging research and application: creating solutions that are technically sound, but also practical and impactful in the field.
-          </p>
-          
-          <p class="animate">
-            Beyond the technical side, I care deeply about the "why." I believe data and AI should be used not only to optimise processes, but also to address broader questions around fairness, resources, and inequality. Much of my work is guided by the principle of data-for-social-good — building systems that help people make better, fairer decisions. If you're interested in AI, maps, or applied data science, this space is where I share projects, reflections, and the occasional experiment.
-          </p>           
-        
-        </article>
+        <div class="home-intro">
+          <article class="home-intro__copy space-y-4">
+            <p class="animate">
+              Hi, I’m Jason Tang—an applied scientist with a background in Geography and Geocomputation.
+            </p>
+
+            <p class="animate">
+              Today, my work spans applied machine learning, data, reinforcement-learning environments, multimodal models, geospatial analysis, and agentic systems.
+            </p>
+
+            <p class="animate">
+              I care deeply about the “why”: using data and AI not only to optimise processes, but also to address fairness, resources, and inequality. This is where I share projects, reflections, and the occasional experiment in AI, maps, and applied science.
+            </p>
+          </article>
+          <div class="home-intro__portrait animate">
+            <Image
+              src={portrait}
+              alt="Jason Tang holding a dachshund in front of a city skyline"
+              widths={[256, 384, 512]}
+              sizes="(min-width: 768px) 13rem, 10rem"
+            />
+          </div>
+        </div>
       </section>
 
       <section class="animate space-y-6">
         <div class="flex flex-wrap gap-y-2 items-center justify-between">
           <h5 class="font-semibold text-black dark:text-white">
-            Latest posts
-          </h5>
-          <Link href="/blog">
-            See all posts
-          </Link>
-        </div>
-        <ul class="flex flex-col gap-4">
-          {blog.map(post => (
-            <li>
-              <ArrowCard entry={post} />
-            </li>
-          ))}
-        </ul>
-      </section> 
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
-            Recent projects
+            Selected work
           </h5>
           <Link href="/projects">
-            See all projects
+            Visit the archive
           </Link>
         </div>
-        <ul class="flex flex-col gap-4">
-          {projects.map(project => (
-            <li>
-              <ArrowCard entry={project} />
-            </li>
-          ))}
-        </ul>
+        <div class="project-list project-list--compact">
+          {projects.map((project, index) => <ProjectCard entry={project} index={index} />)}
+        </div>
       </section>
 
       <section class="animate space-y-4">

@@ -1,11 +1,12 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import { readingTime } from "@lib/utils";
 import BackToPrev from "@components/BackToPrev.astro";
 import Link from "@components/Link.astro";
+import Reference from "@components/Reference.astro";
+import EntryTableOfContents from "@components/EntryTableOfContents.astro";
 
 export async function getStaticPaths() {
   const projects = (await getCollection("projects"))
@@ -20,48 +21,58 @@ type Props = CollectionEntry<"projects">;
 
 const project = Astro.props;
 const { Content } = await project.render();
+
+const headings = [...project.body.matchAll(/^(#{2,3})\s+(.+)$/gm)].map((match) => ({
+  depth: match[1].length,
+  text: match[2].replace(/[`*_]/g, ""),
+  id: match[2]
+    .replace(/[`*_]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-"),
+}));
 ---
 
 <PageLayout title={project.data.title} description={project.data.description}>
-  <Container>
-    <div class="animate">
-      <BackToPrev href="/projects">
-        Back to projects
-      </BackToPrev>
-    </div>
-    <div class="space-y-1 my-10">
-      <div class="animate flex items-center gap-1.5">
-        <div class="font-base text-sm">
-          <FormattedDate date={project.data.date} />
-        </div>
-        &bull;
-        <div class="font-base text-sm">
-          {readingTime(project.body)}
-        </div>
+  <div class="entry-frame">
+    <aside class="entry-frame__toc animate">
+      <EntryTableOfContents headings={headings} />
+    </aside>
+    <main class="entry-frame__main">
+      <div class="animate">
+        <BackToPrev href="/projects">
+          Back to archive
+        </BackToPrev>
       </div>
-      <div class="animate text-2xl font-semibold text-black dark:text-white">
-        {project.data.title}
+      <div class="space-y-1 my-10">
+        <div class="animate flex items-center gap-1.5">
+          <div class="font-base text-sm">
+            <FormattedDate date={project.data.date} />
+          </div>
+          &bull;
+          <div class="font-base text-sm">
+            {readingTime(project.body)}
+          </div>
+        </div>
+        <p class="animate archive-entry__kind">{project.data.kind === "note" ? "Writing" : "Project"}</p>
+        <h1 class="animate archive-entry__title">{project.data.title}</h1>
+        <p class="animate archive-entry__description">{project.data.description}</p>
+        {(project.data.demoURL || project.data.repoURL) && (
+          <nav class="animate flex gap-1">
+            {project.data.demoURL && <Link href={project.data.demoURL} external>demo</Link>}
+            {project.data.demoURL && project.data.repoURL && <span>/</span>}
+            {project.data.repoURL && <Link href={project.data.repoURL} external>repo</Link>}
+          </nav>
+        )}
       </div>
-      {(project.data.demoURL || project.data.repoURL) && (
-        <nav class="animate flex gap-1">
-          {project.data.demoURL && (
-            <Link href={project.data.demoURL} external>
-              demo
-            </Link>
-          )}
-          {project.data.demoURL && project.data.repoURL && (
-            <span>/</span>
-          )}
-          {project.data.repoURL && (
-            <Link href={project.data.repoURL} external>
-              repo
-            </Link>
-          )}
-        </nav>
-      )}
-    </div>
-    <article class="animate">
-      <Content />
-    </article>
-  </Container>
+      <article class="animate">
+        <Content />
+        <div class="entry-frame__mobile-references"><Reference references={project.data.references} notes={project.data.notes} /></div>
+      </article>
+    </main>
+    <aside class="entry-frame__references animate">
+      <Reference references={project.data.references} notes={project.data.notes} rail />
+    </aside>
+  </div>
 </PageLayout>

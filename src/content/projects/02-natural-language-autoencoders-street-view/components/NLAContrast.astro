@@ -1,0 +1,43 @@
+---
+interface Props {
+  title: string;
+  leftLabel: string;
+  leftText: string;
+  rightLabel: string;
+  rightText: string;
+  caption?: string;
+}
+
+const {
+  title,
+  leftLabel,
+  leftText,
+  rightLabel,
+  rightText,
+  caption,
+} = Astro.props as Props;
+---
+
+<section class="not-prose my-8 rounded-3xl border border-stone-200/80 bg-white/80 p-5 shadow-sm shadow-stone-200/40 dark:border-stone-800 dark:bg-stone-950/70 dark:shadow-none">
+  <h3 class="mb-4 text-lg font-semibold text-black dark:text-white">{title}</h3>
+
+  <div class="grid gap-3 md:grid-cols-2">
+    <div class="rounded-2xl border border-stone-200 bg-stone-50/80 p-4 dark:border-stone-800 dark:bg-stone-900/80">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-500 dark:text-stone-400">
+        {leftLabel}
+      </p>
+      <p class="text-sm leading-6 text-stone-700 dark:text-stone-300">{leftText}</p>
+    </div>
+
+    <div class="rounded-2xl border border-stone-900 bg-black p-4 dark:border-white dark:bg-white">
+      <p class="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-300 dark:text-stone-600">
+        {rightLabel}
+      </p>
+      <p class="text-sm leading-6 text-white dark:text-black">{rightText}</p>
+    </div>
+  </div>
+
+  {caption && (
+    <p class="mt-4 text-sm leading-6 text-stone-600 dark:text-stone-400">{caption}</p>
+  )}
+</section>

@@ -1,24 +1,5 @@
 import { defineCollection, z } from "astro:content";
 
-const blog = defineCollection({
-  type: "content",
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    date: z.coerce.date(),
-    draft: z.boolean().optional(),
-    references: z.array(z.object({
-      title: z.string(),
-      url: z.string().url().optional(),
-      note: z.string().optional()
-    })).default([]),
-    notes: z.array(z.object({
-      title: z.string(),
-      body: z.string()
-    })).default([])
-  }),
-});
-
 const work = defineCollection({
   type: "content",
   schema: z.object({
@@ -31,13 +12,22 @@ const work = defineCollection({
 
 const projects = defineCollection({
   type: "content",
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
     draft: z.boolean().optional(),
+    kind: z.enum(["project", "note"]).default("project"),
+    tags: z.array(z.string()).default([]),
+    hero: image().optional(),
     demoURL: z.string().optional(),
-    repoURL: z.string().optional()
+    repoURL: z.string().optional(),
+    references: z.array(z.object({
+      title: z.string(),
+      url: z.string().url().optional(),
+      note: z.string().optional()
+    })).default([]),
+    notes: z.array(z.object({ title: z.string(), body: z.string() })).default([])
   }),
 });
 
@@ -76,4 +66,4 @@ const ideas = defineCollection({
   }),
 });
 
-export const collections = { blog, work, projects, ideas };
+export const collections = { work, projects, ideas };

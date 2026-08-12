@@ -1,0 +1,47 @@
+---
+type Heading = { depth: number; id: string; text: string };
+type Props = { headings: Heading[] };
+const { headings } = Astro.props;
+---
+
+{headings.length > 0 && (
+  <nav class="entry-toc" aria-label="On this page">
+    <p>On this page</p>
+    <ol>
+      {headings.map((heading) => (
+        <li class:list={{ "entry-toc__nested": heading.depth > 2 }}>
+          <a href={`#${heading.id}`} data-toc-link={heading.id}>{heading.text}</a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}
+
+<script>
+  function setupTableOfContents() {
+    const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]")];
+    if (!links.length) return;
+
+    const headings = links
+      .map((link) => document.getElementById(link.dataset.tocLink ?? ""))
+      .filter((heading): heading is HTMLElement => Boolean(heading));
+
+    const setCurrent = (id: string) => {
+      links.forEach((link) => link.toggleAttribute("aria-current", link.dataset.tocLink === id));
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (visible?.target.id) setCurrent(visible.target.id);
+      },
+      { rootMargin: "-22% 0px -68% 0px", threshold: 0 },
+    );
+
+    headings.forEach((heading) => observer.observe(heading));
+    setCurrent(headings[0]?.id ?? "");
+  }
+
+  document.addEventListener("astro:page-load", setupTableOfContents);
+  document.addEventListener("DOMContentLoaded", setupTableOfContents);
+</script>

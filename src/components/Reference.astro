@@ -7,16 +7,17 @@ type NoteItem = { title: string; body: string };
 interface Props {
   references?: ReferenceItem[];
   notes?: NoteItem[];
+  rail?: boolean;
 }
 
-const { references = [], notes = [] } = Astro.props as Props;
+const { references = [], notes = [], rail = false } = Astro.props as Props;
 ---
 
 {(references.length > 0 || notes.length > 0) && (
-  <div class="flex flex-col gap-6 mt-10">
+  <div class:list={["flex flex-col gap-6", rail ? "reference-rail" : "mt-10"]}>
     {references.length > 0 && (
       <section class="flex flex-col gap-3">
-        <h3 class="text-lg font-semibold">References</h3>
+        <h3 class={rail ? "reference-rail__title" : "text-lg font-semibold"}>References</h3>
         <ol class="flex flex-col gap-2">
           {references.map((r) => (
             <li class="text-sm text-gray-700 dark:text-gray-300">
@@ -39,10 +40,10 @@ const { references = [], notes = [] } = Astro.props as Props;
     )}
     {notes.length > 0 && (
       <section class="flex flex-col gap-3">
-        <h3 class="text-lg font-semibold">Notes</h3>
+        <h3 class={rail ? "reference-rail__title" : "text-lg font-semibold"}>Footnotes</h3>
         <div class="flex flex-col gap-4">
           {notes.map((note) => (
-            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+            <div class={rail ? "reference-rail__note" : "bg-gray-50 dark:bg-gray-800 rounded-lg p-4"}>
               <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">{note.title}</h4>
               <p class="text-sm text-gray-700 dark:text-gray-300">{note.body}</p>
             </div>
